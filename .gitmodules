@@ -1,0 +1,6 @@
+[submodule "external/M-Practice-Manager"]
+	path = external/M-Practice-Manager
+	url = https://github.com/neiljones232new/M-Practice-Manager
+[submodule "external/M-Customs-Manager"]
+	path = external/M-Customs-Manager
+	url = https://github.com/neiljones232new/M-Customs-Manager
