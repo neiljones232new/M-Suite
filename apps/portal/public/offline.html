@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>M-Suite Offline</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: radial-gradient(circle at top, #222, #000);
+        font-family: system-ui, sans-serif;
+        color: white;
+        text-align: center;
+      }
+
+      .card {
+        padding: 50px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 32px;
+      }
+
+      p {
+        margin-top: 12px;
+        opacity: 0.7;
+      }
+
+      button {
+        margin-top: 25px;
+        padding: 12px 20px;
+        border-radius: 14px;
+        border: none;
+        background: #22c55e;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover {
+        opacity: 0.85;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <h1>M-Suite is Stopped</h1>
+      <p>The development suite is not currently running.</p>
+
+      <p>Click the M-Suite app icon to start everything again.</p>
+
+      <button onclick="window.location.href='http://localhost:4000'">
+  ▶ Relaunch Portal
+</button>
+
+    </div>
+  </body>
+</html>
