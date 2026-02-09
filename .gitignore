@@ -92,3 +92,4 @@ generated/
 # Documentation artifacts
 CONSOLIDATION_COMPLETE.md
 API_RESTART_NEEDED.md
+node_modules
