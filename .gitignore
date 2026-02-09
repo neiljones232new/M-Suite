@@ -2,7 +2,8 @@
 **/node_modules/
 **/.pnpm-store/
 .pnpm-debug.log*
-**/pnpm-lock.yaml
+# Keep pnpm-lock.yaml for reproducible installs!
+# Only ignore lock files we don't use:
 **/package-lock.json
 **/yarn.lock
 **/.yarn/
@@ -29,6 +30,7 @@
 .env.prod
 
 # Storage / local data - AGGRESSIVE
+# Runtime data only - use .gitkeep if you need empty folders tracked
 **/storage/
 **/uploads/
 **/*.db
@@ -36,6 +38,7 @@
 **/*.db-wal
 **/*.sqlite
 **/*.sqlite3
+!**/.gitkeep
 
 # App local config
 apps/web-practice/storage/
@@ -73,6 +76,10 @@ coverage/
 .nyc_output/
 *.lcov
 
+# Generated files
+generated/
+*.tsbuildinfo
+
 # IDE & AI Assistant
 .vscode/
 .idea/
@@ -97,11 +104,7 @@ M-Suite
 .cache/
 msuite-structure.txt
 
-# Generated files
-generated/
-*.tsbuildinfo
-
-# Documentation artifacts
-CONSOLIDATION_COMPLETE.md
-API_RESTART_NEEDED.md
+# Temporary documentation (remove if these should be permanent)
+# CONSOLIDATION_COMPLETE.md
+# API_RESTART_NEEDED.md
 node_modules
