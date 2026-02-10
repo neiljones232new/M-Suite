@@ -11,7 +11,7 @@ function run(cmd: string) {
 }
 
 const PLIST = "/Library/LaunchAgents/com.msuite.dev.plist";
-const SERVICE = `gui/${process.getuid()}/com.msuite.dev`;
+const SERVICE = `gui/${process.getuid?.() ?? 501}/com.msuite.dev`;
 
 export async function POST(req: Request) {
   const { action } = await req.json();
