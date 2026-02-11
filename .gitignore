@@ -39,6 +39,11 @@
 credentials
 aws-credentials
 .aws/credentials
+com.msuite.dev.plist
+
+# Ensure detect-secrets baseline & pre-commit config tracked
+!.secrets.baseline
+!.pre-commit-config.yaml
 
 # Storage / local data - AGGRESSIVE
 # Runtime data only - use .gitkeep if you need empty folders tracked
