@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { exec } from "child_process";
+import { homedir } from "os";
 
 function run(cmd: string) {
   return new Promise((resolve, reject) => {
@@ -10,8 +11,8 @@ function run(cmd: string) {
   });
 }
 
-const PLIST = "/Library/LaunchAgents/com.msuite.dev.plist";
-const SERVICE = `gui/${process.getuid()}/com.msuite.dev`;
+const PLIST = `${homedir()}/Library/LaunchAgents/com.msuite.dev.plist`;
+const SERVICE = `gui/${process.getuid?.() ?? 501}/com.msuite.dev`;
 
 export async function POST(req: Request) {
   const { action } = await req.json();

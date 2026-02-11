@@ -29,6 +29,17 @@
 .env.production.local
 .env.prod
 
+# Secrets & keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.secret
+credentials
+aws-credentials
+.aws/credentials
+
 # Storage / local data - AGGRESSIVE
 # Runtime data only - use .gitkeep if you need empty folders tracked
 **/storage/
@@ -104,7 +115,11 @@ M-Suite
 .cache/
 msuite-structure.txt
 
-# Temporary documentation (remove if these should be permanent)
-# CONSOLIDATION_COMPLETE.md
-# API_RESTART_NEEDED.md
+# Keep important documentation
+!SETUP.md
+!QUICK_START.md
+!TROUBLESHOOTING.md
+!FIXES_APPLIED.md
+
+# Temporary files
 node_modules

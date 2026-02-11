@@ -9,7 +9,7 @@
 	<array>
 		<string>/bin/zsh</string>
 		<string>-c</string>
-		<string>source ~/.zshrc && pnpm suite</string>
+		<string>cd "$HOME/Developer/M_Suite" &amp;&amp; source ~/.zshrc &amp;&amp; pnpm suite</string>
 	</array>
 	
 	<key>WorkingDirectory</key>
