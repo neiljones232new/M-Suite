@@ -109,7 +109,7 @@ pnpm -C external/M-Practice-Manager db:up
 pnpm -C external/M-Practice-Manager db:migrate
 
 # Update .env to use local database
-# DATABASE_URL="postgresql://user:password@localhost:5432/practice_manager"
+# DATABASE_URL="postgresql://[username]:[password]@localhost:5432/practice_manager"
 ```
 
 ---
