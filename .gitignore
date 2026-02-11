@@ -10,6 +10,12 @@
 .npm/
 .eslintcache
 
+# Python virtual environments
+.venv/
+venv/
+**/.venv/
+**/venv/
+
 # Builds - AGGRESSIVE
 **/.next/
 **/dist/
