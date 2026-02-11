@@ -35,9 +35,14 @@ M-Suite/
 # Install dependencies
 pnpm install
 
+# Generate Prisma client (required for Practice Manager API)
+pnpm -C external/M-Practice-Manager db:generate
+
 # Start all services
 pnpm suite
 ```
+
+**📖 See [QUICK_START.md](QUICK_START.md) for detailed first-time setup**
 
 ### Individual Services
 
@@ -113,6 +118,10 @@ npm run prisma:generate
 
 ## Documentation
 
+- **[QUICK_START.md](QUICK_START.md)** - Get up and running in 5 minutes
+- **[SETUP.md](SETUP.md)** - Detailed setup guide with prerequisites and configuration
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions
+- **[FIXES_APPLIED.md](FIXES_APPLIED.md)** - Recent fixes and changes (Feb 2026)
 - `.kiro/steering/` - AI assistant guidance and project conventions
 - `apps/portal/` - Portal application documentation
 - `external/M-Practice-Manager/` - Practice Manager documentation

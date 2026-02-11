@@ -10,10 +10,10 @@
     "suite": "concurrently \"pnpm portal\" \"pnpm practice\" \"pnpm practice-api\" \"pnpm customs\" \"pnpm customs-backend\"",
 
     "practice": "pnpm -C external/M-Practice-Manager dev:web",
-    "practice-api": "pnpm -C external/M-Practice-Manager dev:api",
+    "practice-api": "pnpm -C external/M-Practice-Manager db:generate && pnpm -C external/M-Practice-Manager dev:api",
 
-    "customs": "npm --prefix external/M-Customs-Manager run dev",
-    "customs-backend": "npm --prefix external/M-Customs-Manager/backend run dev",
+    "customs": "pnpm --prefix external/M-Customs-Manager run dev",
+    "customs-backend": "pnpm --prefix external/M-Customs-Manager/backend run dev",
 
     "open:apps": "wait-on http://localhost:3000 http://localhost:5173 && open http://localhost:4000",
 
