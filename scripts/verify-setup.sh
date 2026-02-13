@@ -62,7 +62,7 @@ echo ""
 
 # 2. Check versions
 echo "2. Checking versions..."
-check_version "node --version" "v22.22.0"
+check_version "node --version" "v20.20.0"
 check_version "pnpm --version" "10.28.2"
 echo ""
 

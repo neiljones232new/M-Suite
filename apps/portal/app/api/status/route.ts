@@ -14,7 +14,9 @@ async function ping(url: string) {
 
 export async function GET() {
   const practiceWeb = await ping("http://localhost:3000");
-  const practiceApi = await ping("http://localhost:3001/api/v1/health");
+  const practiceApiLiveness = await ping("http://localhost:3001/api/v1/health");
+  const practiceApiReadiness = await ping("http://localhost:3001/api/v1/health/ready");
+  const practiceApi = practiceApiReadiness;
 
   const customsUi = await ping("http://localhost:5173");
   const customsBackend = await ping("http://localhost:3100/health");
@@ -22,6 +24,8 @@ export async function GET() {
   return NextResponse.json({
     practiceWeb,
     practiceApi,
+    practiceApiLiveness,
+    practiceApiReadiness,
     customsUi,
     customsBackend,
   });

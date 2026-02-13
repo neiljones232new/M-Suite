@@ -8,8 +8,8 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/zsh</string>
-		<string>-c</string>
-		<string>cd "$HOME/Developer/M_Suite" &amp;&amp; source ~/.zshrc &amp;&amp; pnpm suite</string>
+		<string>-lc</string>
+		<string>/Users/neiljones/Developer/M_Suite/scripts/launchagent-entry.sh</string>
 	</array>
 	
 	<key>WorkingDirectory</key>
@@ -29,14 +29,14 @@
 	
 	<key>StandardOutPath</key>
 	<string>/tmp/msuite.log</string>
-	
+
 	<key>StandardErrorPath</key>
-	<string>/tmp/msuite.log</string>
+	<string>/tmp/msuite-error.log</string>
 	
 	<key>EnvironmentVariables</key>
 	<dict>
 		<key>PATH</key>
-		<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.nvm/versions/node/v22.22.0/bin</string>
+		<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.nvm/versions/node/v20.20.0/bin</string>
 	</dict>
 </dict>
 </plist>
