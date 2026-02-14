@@ -21,11 +21,14 @@ venv/
 **/dist/
 **/build/
 **/out/
+**/src-tauri/target/
+**/src-tauri/bundle/
 **/.turbo/
 .cache/
 **/.cache/
 *.tsbuildinfo
 **/*.tsbuildinfo
+*.dmg
 
 # Environment variables
 .env

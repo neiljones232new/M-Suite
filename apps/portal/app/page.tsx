@@ -1,11 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-/* ===============================
-   Status Light Component
-================================ */
+type ServiceKey = "practiceWeb" | "practiceApi" | "customsUi" | "customsBackend";
+type Action = "start" | "stop" | "restart";
+
+type StatusState = Record<ServiceKey, boolean>;
+
+const initialStatus: StatusState = {
+  practiceWeb: false,
+  practiceApi: false,
+  customsUi: false,
+  customsBackend: false,
+};
+
 function StatusLight({ label, online }: { label: string; online: boolean }) {
   return (
     <div
@@ -35,65 +44,105 @@ function StatusLight({ label, online }: { label: string; online: boolean }) {
   );
 }
 
-/* ===============================
-   Main Portal Page
-================================ */
+function ServiceControls({
+  service,
+  running,
+  loadingKey,
+  onAction,
+}: {
+  service: ServiceKey;
+  running: boolean;
+  loadingKey: string | null;
+  onAction: (service: ServiceKey, action: Action) => void;
+}) {
+  const startBusy = loadingKey === `${service}:start`;
+  const stopBusy = loadingKey === `${service}:stop`;
+  const restartBusy = loadingKey === `${service}:restart`;
+
+  return (
+    <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "center" }}>
+      <button
+        onClick={() => onAction(service, "start")}
+        disabled={startBusy || running}
+        style={controlBtn("#22c55e", startBusy || running)}
+      >
+        {startBusy ? "Starting..." : "Start"}
+      </button>
+      <button
+        onClick={() => onAction(service, "restart")}
+        disabled={restartBusy || !running}
+        style={controlBtn("#facc15", restartBusy || !running)}
+      >
+        {restartBusy ? "Restarting..." : "Restart"}
+      </button>
+      <button
+        onClick={() => onAction(service, "stop")}
+        disabled={stopBusy || !running}
+        style={controlBtn("#ef4444", stopBusy || !running)}
+      >
+        {stopBusy ? "Stopping..." : "Stop"}
+      </button>
+    </div>
+  );
+}
+
 export default function Home() {
-  const [status, setStatus] = useState({
-    practiceWeb: false,
-    practiceApi: false,
-    customsUi: false,
-    customsBackend: false,
-  });
-
+  const [status, setStatus] = useState<StatusState>(initialStatus);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>("");
 
-  /* Status Refresh */
-  useEffect(() => {
-    async function loadStatus() {
-      try {
-        const res = await fetch("/api/status");
-        const data = await res.json();
-        setStatus(data);
-      } catch {
-        console.log("Status check failed");
-      }
+  async function loadStatus() {
+    try {
+      const res = await fetch("/api/status", { cache: "no-store" });
+      const data = await res.json();
+      setStatus({
+        practiceWeb: Boolean(data.practiceWeb),
+        practiceApi: Boolean(data.practiceApi),
+        customsUi: Boolean(data.customsUi),
+        customsBackend: Boolean(data.customsBackend),
+      });
+    } catch {
+      setMessage("Status check failed.");
     }
+  }
 
+  useEffect(() => {
     loadStatus();
     const interval = setInterval(loadStatus, 8000);
-
     return () => clearInterval(interval);
   }, []);
 
-  /* LaunchAgent Control */
-  async function runAction(action: "start" | "stop" | "restart") {
-    setLoadingAction(action);
+  async function runAction(target: "suite" | ServiceKey, action: Action) {
+    const key = `${target}:${action}`;
+    setLoadingAction(key);
+    setMessage("");
 
-    // ✅ STOP: Redirect instantly before shutdown
-    if (action === "stop") {
-      // Redirect same tab (Safari-safe)
-      window.location.href = "/offline.html";
+    try {
+      if (target === "suite" && action === "stop") {
+        window.location.href = "/offline.html";
+      }
 
-      // Fire stop request in background
-      fetch("/api/control", {
+      const res = await fetch("/api/control", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, target }),
       });
+      const data = await res.json();
 
-      return;
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Control action failed");
+      }
+
+      setMessage(`${target} ${action} request sent.`);
+      setTimeout(loadStatus, 1200);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Action failed.");
+    } finally {
+      setTimeout(() => setLoadingAction(null), 600);
     }
-
-    // Normal start/restart
-    await fetch("/api/control", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
-    });
-
-    setTimeout(() => setLoadingAction(null), 1500);
   }
+
+  const allRunning = useMemo(() => Object.values(status).every(Boolean), [status]);
 
   return (
     <main
@@ -108,7 +157,6 @@ export default function Home() {
         textAlign: "center",
       }}
     >
-      {/* Header */}
       <header style={{ marginBottom: 30 }}>
         <Image
           src="/M_Logo_Silver.png"
@@ -126,9 +174,9 @@ export default function Home() {
         <p style={{ marginTop: 10, fontSize: 14, opacity: 0.7 }}>
           Unified launcher for Practice + Customs apps.
         </p>
+        {message ? <p style={{ marginTop: 8, fontSize: 13, color: "#d1d5db" }}>{message}</p> : null}
       </header>
 
-      {/* Cards Grid */}
       <div
         style={{
           display: "grid",
@@ -138,7 +186,6 @@ export default function Home() {
           width: "100%",
         }}
       >
-        {/* Practice */}
         <div style={cardStyle("rgba(109,40,217,0.40)")}>
           <Image
             src="/M_Logo_PurpleD.png"
@@ -152,7 +199,20 @@ export default function Home() {
           <p style={descStyle}>Client management + compliance platform</p>
 
           <StatusLight label="Practice Web" online={status.practiceWeb} />
+          <ServiceControls
+            service="practiceWeb"
+            running={status.practiceWeb}
+            loadingKey={loadingAction}
+            onAction={runAction}
+          />
+
           <StatusLight label="Practice API" online={status.practiceApi} />
+          <ServiceControls
+            service="practiceApi"
+            running={status.practiceApi}
+            loadingKey={loadingAction}
+            onAction={runAction}
+          />
 
           <div style={{ marginTop: 18, display: "grid", gap: 10 }}>
             <a
@@ -173,7 +233,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Customs */}
         <div style={cardStyle("rgba(202,138,4,0.40)")}>
           <Image
             src="/M_Logo_Gold.png"
@@ -187,7 +246,20 @@ export default function Home() {
           <p style={descStyle}>Duty + VAT repayment automation suite</p>
 
           <StatusLight label="Customs UI" online={status.customsUi} />
+          <ServiceControls
+            service="customsUi"
+            running={status.customsUi}
+            loadingKey={loadingAction}
+            onAction={runAction}
+          />
+
           <StatusLight label="Backend API" online={status.customsBackend} />
+          <ServiceControls
+            service="customsBackend"
+            running={status.customsBackend}
+            loadingKey={loadingAction}
+            onAction={runAction}
+          />
 
           <div style={{ marginTop: 18, display: "grid", gap: 10 }}>
             <a
@@ -209,7 +281,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Control Buttons BELOW Cards */}
       <div
         style={{
           display: "flex",
@@ -218,31 +289,33 @@ export default function Home() {
         }}
       >
         <button
-          onClick={() => runAction("start")}
-          style={controlBtn("#22c55e")}
+          onClick={() => runAction("suite", "start")}
+          style={controlBtn("#22c55e", Boolean(loadingAction))}
+          disabled={Boolean(loadingAction) || allRunning}
         >
-          {loadingAction === "start" ? "Starting..." : "▶ Start Suite"}
+          {loadingAction === "suite:start" ? "Starting..." : "Start Suite"}
         </button>
 
         <button
-          onClick={() => runAction("restart")}
-          style={controlBtn("#facc15")}
+          onClick={() => runAction("suite", "restart")}
+          style={controlBtn("#facc15", Boolean(loadingAction))}
+          disabled={Boolean(loadingAction)}
         >
-          {loadingAction === "restart" ? "Restarting..." : "🔄 Restart"}
+          {loadingAction === "suite:restart" ? "Restarting..." : "Restart Suite"}
         </button>
 
         <button
-          onClick={() => runAction("stop")}
-          style={controlBtn("#ef4444")}
+          onClick={() => runAction("suite", "stop")}
+          style={controlBtn("#ef4444", Boolean(loadingAction))}
+          disabled={Boolean(loadingAction)}
         >
-          {loadingAction === "stop" ? "Stopping..." : "⛔ Stop"}
+          {loadingAction === "suite:stop" ? "Stopping..." : "Stop Suite"}
         </button>
       </div>
     </main>
   );
 }
 
-/* Helpers */
 const titleStyle = { color: "#fff", fontSize: 20 };
 const descStyle = { marginTop: 6, fontSize: 13, opacity: 0.65 };
 
@@ -269,15 +342,16 @@ function btn(color: string) {
   };
 }
 
-function controlBtn(color: string) {
+function controlBtn(color: string, disabled: boolean) {
   return {
     padding: "10px 16px",
     borderRadius: 14,
     border: "none",
-    cursor: "pointer",
+    cursor: disabled ? "not-allowed" : "pointer",
     fontWeight: 700,
     background: color,
     color: "#000",
     fontSize: 13,
+    opacity: disabled ? 0.6 : 1,
   };
 }

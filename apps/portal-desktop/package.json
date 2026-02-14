@@ -1,0 +1,21 @@
+{
+  "name": "portal-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri:dev": "source $HOME/.cargo/env && export PATH=\"$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\" && tauri dev",
+    "tauri:build": "source $HOME/.cargo/env && export PATH=\"$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\" && tauri build"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.5.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.5.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2"
+  }
+}
