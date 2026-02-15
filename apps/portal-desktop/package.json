@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri:dev": "source $HOME/.cargo/env && export PATH=\"$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\" && tauri dev",
-    "tauri:build": "source $HOME/.cargo/env && export PATH=\"$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\" && tauri build"
+    "tauri:dev": "export CARGO_HOME=\"/Users/neiljones/Developer/Software_Tools/cargo\"; export RUSTUP_HOME=\"/Users/neiljones/Developer/Software_Tools/rustup\"; if [ -f \"$CARGO_HOME/env\" ]; then source \"$CARGO_HOME/env\"; fi; export PATH=\"/Users/neiljones/.nvm/versions/node/v22.22.0/bin:$CARGO_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\" && tauri dev",
+    "tauri:build": "export CARGO_HOME=\"/Users/neiljones/Developer/Software_Tools/cargo\"; export RUSTUP_HOME=\"/Users/neiljones/Developer/Software_Tools/rustup\"; if [ -f \"$CARGO_HOME/env\" ]; then source \"$CARGO_HOME/env\"; fi; export PATH=\"/Users/neiljones/.nvm/versions/node/v22.22.0/bin:$CARGO_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\" && tauri build"
   },
   "dependencies": {
     "@tauri-apps/api": "2.5.0"
