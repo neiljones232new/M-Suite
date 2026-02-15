@@ -10,7 +10,8 @@ struct ServiceDef {
     name: &'static str,
     description: &'static str,
     ports: &'static [u16],
-    script_name: &'static str,
+    start_script: &'static str,
+    stop_script: Option<&'static str>,
 }
 
 #[derive(Serialize)]
@@ -57,28 +58,32 @@ fn services() -> Vec<ServiceDef> {
             name: "Practice Web",
             description: "Practice Manager web frontend",
             ports: &[3000],
-            script_name: "practice",
+            start_script: "practice",
+            stop_script: Some("practice-stop"),
         },
         ServiceDef {
             id: "practiceApi",
             name: "Practice API",
             description: "Practice Manager API",
             ports: &[3001],
-            script_name: "practice-api",
+            start_script: "practice-api",
+            stop_script: Some("practice-api-stop"),
         },
         ServiceDef {
             id: "customsUi",
             name: "Customs UI",
             description: "Customs Manager frontend",
             ports: &[5173],
-            script_name: "customs",
+            start_script: "customs",
+            stop_script: None,
         },
         ServiceDef {
             id: "customsBackend",
             name: "Customs Backend",
             description: "Customs Manager backend API",
             ports: &[3100],
-            script_name: "customs-backend",
+            start_script: "customs-backend",
+            stop_script: None,
         },
     ]
 }
@@ -139,7 +144,7 @@ fn start_service(service: &ServiceDef, root: &PathBuf) -> Result<(), String> {
          elif command -v corepack >/dev/null 2>&1; then PNPM='corepack pnpm'; \
          else echo 'pnpm not found in PATH' >&2; exit 127; fi; \
          exec $PNPM {}",
-        service.script_name
+        service.start_script
     );
     let command = format!(
         "nohup zsh -lc '{}' > /tmp/msuite-{log_name}.log 2>&1 &",
@@ -149,7 +154,28 @@ fn start_service(service: &ServiceDef, root: &PathBuf) -> Result<(), String> {
     Ok(())
 }
 
+fn run_pnpm_script(script: &str, root: &PathBuf) -> Result<(), String> {
+    let command = format!(
+        "set -e; \
+         export PATH=\"/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH\"; \
+         LATEST_NODE_BIN=\"$(ls -d \"$HOME\"/.nvm/versions/node/*/bin 2>/dev/null | sort -V | tail -n 1)\"; \
+         if [ -n \"$LATEST_NODE_BIN\" ]; then export PATH=\"$LATEST_NODE_BIN:$PATH\"; fi; \
+         if [ -f \"$HOME/.cargo/env\" ]; then . \"$HOME/.cargo/env\"; fi; \
+         if [ -s \"$HOME/.nvm/nvm.sh\" ]; then . \"$HOME/.nvm/nvm.sh\"; nvm use --silent default >/dev/null 2>&1 || true; fi; \
+         if command -v pnpm >/dev/null 2>&1; then PNPM='pnpm'; \
+         elif command -v corepack >/dev/null 2>&1; then PNPM='corepack pnpm'; \
+         else echo 'pnpm not found in PATH' >&2; exit 127; fi; \
+         $PNPM {script}"
+    );
+    run_shell(&command, root)?;
+    Ok(())
+}
+
 fn stop_service(service: &ServiceDef, root: &PathBuf) -> Result<(), String> {
+    if let Some(stop_script) = service.stop_script {
+        return run_pnpm_script(stop_script, root);
+    }
+
     for port in service.ports {
         stop_on_port(*port, root)?;
     }
